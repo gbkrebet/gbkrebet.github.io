@@ -48,6 +48,8 @@ Road distances (ordered)
 - Αρμονικό Μινόρε: `T-H-T-T-H-3H-H`
 - Νιαβέντ: `T-H-3H-H-H-3H-H`
 - Νικρίζ: `T-H-3H-H-T-T-H`
+- Νικρίζ: `T-H-3H-H-T-H-T`
+- Σαμπάχ: `T-H-H-3H-H-T-T`
 - Καρσιγάρ: `T-H-T-H-3H-H-T`
 - Χιτζάζ: `H-3H-H-T-H-T-T`
 - Χιτζασκιάρ: `H-3H-H-T-H-3H-H`
