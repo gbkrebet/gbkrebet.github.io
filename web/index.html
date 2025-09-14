@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="el">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Echoes — Λαϊκοί Δρόμοι</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="container">
+      <h1>Λαϊκοί Δρόμοι</h1>
+      <div class="controls-bar">
+        <div class="controls">
+          <div class="controls-left">
+            <label for="tonic">Τονική:</label>
+            <select id="tonic" aria-label="Επιλογή τονικής"></select>
+          </div>
+          <div class="controls-right">
+            <button id="btn-find" class="btn primary">Βρες το δρόμο</button>
+            <button id="btn-fretboard" class="btn">Ταστιέρα</button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">Επιλέξτε τονική για να δείτε τις νότες κάθε Δρόμου.</p>
+    </header>
+
+    <main class="container">
+      <section id="roads"></section>
+    </main>
+
+    <!-- Modal for road details -->
+    <div id="modal-overlay" class="overlay hidden"></div>
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-card">
+        <button class="modal-close" id="modal-close" aria-label="Κλείσιμο">×</button>
+        <h2 id="modal-title"></h2>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <footer class="container foot">
+      <small>Echoes · static site — Rust logic available in <code>src/lib.rs</code>. Inspired by <a href="https://efthymios-ks.github.io/bouzouki-notes/" target="_blank" rel="noopener">bouzouki-notes</a>.</small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+  </html>
