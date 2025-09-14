@@ -372,9 +372,14 @@ function renderMatches(container, matches) {
   if (matches.length === 0) {
     const p = document.createElement('div'); p.className = 'label'; p.textContent = 'Δεν βρέθηκε αντίστοιχος δρόμος για αυτήν την επιλογή.'; container.appendChild(p); return;
   }
-  const grid = document.createElement('div'); grid.className = 'grid';
+  const grid = document.createElement('div'); grid.className = 'match-grid';
+  // Dynamically scale match cards: keep max size for few results, shrink as count grows
+  const n = matches.length;
+  // Scale from 1.0 (<=2 matches) down to ~0.78 (>=10 matches)
+  const scale = (n <= 2) ? 1.0 : Math.max(0.78, 1.0 - 0.03 * (n - 2));
+  grid.style.setProperty('--scale', String(scale));
   matches.forEach(m => {
-    const card = document.createElement('section'); card.className = 'card';
+    const card = document.createElement('section'); card.className = 'card match-card';
     const h2 = document.createElement('h2'); h2.textContent = `${m.road.name}`;
     const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = m.tonic; h2.appendChild(badge);
     const dist = document.createElement('div'); dist.className = 'dist'; dist.textContent = m.road.distances;

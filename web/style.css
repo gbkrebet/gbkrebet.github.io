@@ -34,12 +34,29 @@ select {
 }
 
 .grid { display: grid; grid-template-columns: repeat(3, 320px); gap: 16px; justify-content: center; }
+.match-grid {
+  /* Adaptive grid for finder results: shrinks as matches grow */
+  --scale: 1;           /* set dynamically from JS: 1.0 down to ~0.75 */
+  --col: 320px;         /* max card column width matches main cards */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--col) * var(--scale)), 1fr));
+  gap: 12px;
+  justify-content: center;
+}
 .card {
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
   cursor: pointer;
   overflow: hidden;
 }
+.match-card {
+  /* Scale inner spacing and typography based on --scale */
+  padding: calc(16px * var(--scale));
+}
+.match-card h2 { font-size: calc(18px * var(--scale)); }
+.match-card .dist { font-size: calc(13px * var(--scale)); }
+.match-card .notes { font-size: calc(14px * var(--scale)); }
+.match-card .badge { font-size: calc(12px * var(--scale)); }
 .card h2 { font-size: 18px; margin: 0 0 8px; color: var(--primary); }
 .dist { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .notes { font-feature-settings: "tnum" 1; letter-spacing: 0.05px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; font-size: 14px; text-align: center; display: block; }
