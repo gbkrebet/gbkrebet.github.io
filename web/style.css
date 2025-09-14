@@ -15,7 +15,7 @@ body {
   color: var(--text); background: radial-gradient(1200px 800px at 10% 0%, #12121a, var(--bg));
 }
 
-.container { max-width: 920px; margin: 0 auto; padding: 24px; }
+.container { max-width: 992px; margin: 0 auto; padding: 24px; }
 header.container { padding-top: 40px; }
 h1 { margin: 0 0 16px; font-size: 28px; letter-spacing: 0.4px; }
 .hint { color: var(--muted); margin: 8px 0 0; }
@@ -23,7 +23,7 @@ h1 { margin: 0 0 16px; font-size: 28px; letter-spacing: 0.4px; }
 .controls { display: flex; gap: 10px; align-items: center; margin-top: 8px; justify-content: flex-start; }
 .controls-left { display: flex; gap: 10px; align-items: center; }
 .controls-right { display: flex; gap: 10px; align-items: center; margin-left: auto; }
-.controls-bar { width: calc(3 * 280px + 2 * 16px); margin: 0 auto; }
+.controls-bar { width: calc(3 * 320px + 2 * 16px); margin: 0 auto; }
 .vnav { display: flex; flex-direction: column; gap: 10px; }
 .btn { cursor: pointer; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--text); text-align: left; }
 .btn.primary { background: linear-gradient(180deg, rgba(137,180,250,0.15), rgba(137,180,250,0.05)); border-color: #2a3a66; }
@@ -33,7 +33,7 @@ select {
   border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px;
 }
 
-.grid { display: grid; grid-template-columns: repeat(3, 290px); gap: 16px; justify-content: center; }
+.grid { display: grid; grid-template-columns: repeat(3, 320px); gap: 16px; justify-content: center; }
 .card {
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.25);
@@ -42,7 +42,7 @@ select {
 }
 .card h2 { font-size: 18px; margin: 0 0 8px; color: var(--primary); }
 .dist { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-.notes { font-feature-settings: "tnum" 1; letter-spacing: 0.05px; white-space: nowrap; font-size: 14px; overflow: hidden; text-overflow: clip; }
+.notes { font-feature-settings: "tnum" 1; letter-spacing: 0.05px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; font-size: 14px; text-align: center; display: block; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #20202a; border: 1px solid var(--border); color: var(--accent); font-size: 12px; margin-left: 6px; }
 
 /* Units (4-chord / 5-chord) */
@@ -81,12 +81,12 @@ select {
 }
 
 @media (max-width: 900px) {
-  .grid { grid-template-columns: repeat(2, 290px); }
-  .controls-bar { width: calc(2 * 290px + 1 * 16px); }
+  .grid { grid-template-columns: repeat(2, 320px); }
+  .controls-bar { width: calc(2 * 320px + 1 * 16px); }
 }
 @media (max-width: 600px) {
-  .grid { grid-template-columns: 290px; }
-  .controls-bar { width: 290px; }
+  .grid { grid-template-columns: 320px; }
+  .controls-bar { width: 320px; }
 }
 
 /* Find modal */
