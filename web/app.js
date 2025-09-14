@@ -149,7 +149,31 @@ function render(tonic) {
     const dist = document.createElement('div'); dist.className = 'dist'; dist.textContent = r.distances;
     const notes = document.createElement('div'); notes.className = 'notes';
     const seq = computeScale(tonic, r.steps).names;
-    notes.textContent = seq.join(' · ');
+    // Map of roads with "moving" notes and the degree to highlight (0-based index)
+    const movingIdx = movingNoteIndex(r.name);
+    // Render notes with separators; highlight target note and add stacked arrows under it
+    for (let i = 0; i < seq.length; i++) {
+      if (i > 0) notes.appendChild(document.createTextNode(' · '));
+      if (movingIdx !== null && i === movingIdx) {
+        const wrap = document.createElement('span');
+        wrap.className = 'note-spot';
+        const txt = document.createElement('span');
+        txt.className = 'note-text highlight-red';
+        txt.textContent = seq[i];
+        const arrows = document.createElement('span');
+        arrows.className = 'move-arrows';
+        const left = document.createElement('span'); left.textContent = '←';
+        const right = document.createElement('span'); right.textContent = '→';
+        arrows.appendChild(left); arrows.appendChild(right);
+        wrap.appendChild(txt); wrap.appendChild(arrows);
+        notes.appendChild(wrap);
+      } else {
+        const span = document.createElement('span');
+        span.className = 'note-text';
+        span.textContent = seq[i];
+        notes.appendChild(span);
+      }
+    }
     const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = tonic;
     h2.appendChild(badge);
     card.appendChild(h2); card.appendChild(dist); card.appendChild(notes);
@@ -158,6 +182,24 @@ function render(tonic) {
     grid.appendChild(card);
   }
   container.appendChild(grid);
+}
+
+// Roads that have a "moving" note and which degree to highlight (0-based)
+function movingNoteIndex(roadName) {
+  switch (roadName) {
+    case 'Ουσάκ':
+      return 1; // 2nd note can be sharpened on ascending
+    case 'Καρσιγάρ':
+      return 1; // 2nd note sharpened on ascending
+    case 'Ραστ':
+      return 6; // 7th note flattened on descending
+    case 'Χουζάμ':
+      return 6; // 7th note can be flattened on descending
+    case 'Σεγκιά':
+      return 6; // 7th note flattened on descending
+    default:
+      return null;
+  }
 }
 
 function init() {

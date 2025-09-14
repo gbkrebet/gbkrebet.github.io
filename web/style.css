@@ -63,6 +63,12 @@ select {
 .card .notes { text-align: left; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #20202a; border: 1px solid var(--border); color: var(--accent); font-size: 12px; margin-left: 6px; }
 
+/* Moving-note highlight on initial cards */
+.note-spot { display: inline-flex; flex-direction: column; align-items: center; }
+.note-text { display: inline-block; }
+.highlight-red { color: #ef5350; font-weight: 600; }
+.move-arrows { display: inline-flex; flex-direction: column; line-height: 1; font-size: 11px; color: #ef5350; margin-top: 2px; }
+
 /* Units (4-chord / 5-chord) */
 .units { margin-top: 12px; display: none; }
 .card.expanded .units { display: block; }
