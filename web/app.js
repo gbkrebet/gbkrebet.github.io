@@ -41,6 +41,83 @@ function arraysEqual(a, b) {
   return true;
 }
 
+// Enharmonic spelling support (Do/Re/Mi/Fa/Sol/La/Si with optional #/b)
+const BASE_LETTERS = ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"];
+const BASE_PC = { Do:0, Re:2, Mi:4, Fa:5, Sol:7, La:9, Si:11 };
+
+function nameToPc(name) {
+  // Parse names like 'Sol', 'Sol#', 'Solb'
+  if (!name) return -1;
+  const s = name.trim();
+  const letter = parseBaseLetter(s);
+  if (!letter) return -1;
+  const acc = s.slice(letter.length);
+  let pc = BASE_PC[letter];
+  if (acc === '#') pc = (pc + 1) % 12;
+  else if (acc === 'b') pc = (pc + 11) % 12;
+  return pc;
+}
+
+function parseBaseLetter(name) {
+  // Match the longest base letter prefix
+  const candidates = ["Sol", "Si", "Do", "Re", "Mi", "Fa", "La"]; // order matters (Sol vs Si)
+  for (const c of candidates) if (name.startsWith(c)) return c;
+  return null;
+}
+
+function letterCycleFrom(tonic) {
+  const base = parseBaseLetter(tonic);
+  const idx = BASE_LETTERS.findIndex(l => l === base);
+  if (idx < 0) return BASE_LETTERS.slice();
+  const a = [];
+  for (let i = 0; i < 7; i++) a.push(BASE_LETTERS[(idx + i) % 7]);
+  return a;
+}
+
+function pcFromTonic(tonic) {
+  // Use the 12-TET table to find the tonic PC by name, falling back to enharmonic parse
+  const idx = NOTES.findIndex(n => n.toLowerCase() === tonic.toLowerCase());
+  if (idx >= 0) return idx;
+  return nameToPc(tonic);
+}
+
+function computeScale(tonic, steps) {
+  // Produce spelled names and pitch classes, ensuring one of each base letter per octave.
+  const startPc = pcFromTonic(tonic);
+  if (startPc < 0) return { names: [], pcs: [], degreeMap: new Map() };
+  const pcs = [startPc];
+  let idx = startPc;
+  for (const s of steps) { idx = (idx + s) % NOTES.length; pcs.push(idx); }
+  const letters = letterCycleFrom(tonic);
+  const names = [];
+  for (let i = 0; i < pcs.length; i++) {
+    const target = pcs[i];
+    const letter = letters[i % 7];
+    const basePc = BASE_PC[letter];
+    const diff = (target - basePc + 12) % 12; // 0,1,2,...,11
+    let name;
+    if (diff === 0) name = letter;
+    else if (diff === 1) name = letter + '#';
+    else if (diff === 11) name = letter + 'b';
+    else {
+      // Fallback to sharp-name from canonical table to preserve pitch (rare)
+      // Map pc back to a preferred label from NOTES (sharps)
+      name = sharpNameForPc(target);
+      // Optionally, console.warn for awareness during dev
+      // console.warn('Fallback spelling', { tonic, letter, target, diff, name });
+    }
+    names.push(name);
+  }
+  const degreeMap = new Map();
+  for (let i = 0; i < 7 && i < pcs.length; i++) degreeMap.set(pcs[i], names[i]);
+  return { names, pcs, degreeMap };
+}
+
+function sharpNameForPc(pc) {
+  const map = ["Do","Do#","Re","Re#","Mi","Fa","Fa#","Sol","Sol#","La","La#","Si"];
+  return map[pc % 12];
+}
+
 function findDecompositions(steps) {
   const out = [];
   for (const p of PENTAS) {
@@ -58,18 +135,6 @@ function findDecompositions(steps) {
   return out;
 }
 
-function computeNotes(tonic, steps) {
-  const start = NOTES.findIndex(n => n.toLowerCase() === tonic.toLowerCase());
-  if (start < 0) return [];
-  const out = [NOTES[start]];
-  let idx = start;
-  for (const s of steps) {
-    idx = (idx + s) % NOTES.length;
-    out.push(NOTES[idx]);
-  }
-  return out;
-}
-
 function render(tonic) {
   const container = document.getElementById('roads');
   container.innerHTML = '';
@@ -81,7 +146,7 @@ function render(tonic) {
     const h2 = document.createElement('h2'); h2.textContent = r.name;
     const dist = document.createElement('div'); dist.className = 'dist'; dist.textContent = r.distances;
     const notes = document.createElement('div'); notes.className = 'notes';
-    const seq = computeNotes(tonic, r.steps);
+    const seq = computeScale(tonic, r.steps).names;
     notes.textContent = seq.join(' · ');
     const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = tonic;
     h2.appendChild(badge);
@@ -144,7 +209,7 @@ function openModal(road, tonic) {
   content.appendChild(dist);
 
   const seqDiv = document.createElement('div'); seqDiv.className = 'notes';
-  const seq = computeNotes(tonic, road.steps); seqDiv.textContent = seq.join(' · ');
+  const seq = computeScale(tonic, road.steps).names; seqDiv.textContent = seq.join(' · ');
   content.appendChild(seqDiv);
 
   const mode = classifyMode(road.steps);
@@ -160,8 +225,8 @@ function openModal(road, tonic) {
       const block = document.createElement('div'); block.className = 'unit-block';
       const row = document.createElement('div'); row.className = 'unit-row';
       const sidebar = document.createElement('div'); sidebar.className = 'unit-sidebar';
-      const tag1 = document.createElement('div'); tag1.className = 'unit-tag u' + dec.first.kind; tag1.textContent = `${dec.first.kind}-χορδ ${dec.first.name}`;
-      const tag2 = document.createElement('div'); tag2.className = 'unit-tag u' + dec.second.kind; tag2.textContent = `${dec.second.kind}-χορδ ${dec.second.name}`;
+      const tag1 = document.createElement('div'); tag1.className = 'unit-tag u' + dec.first.kind; tag1.textContent = `${dec.first.kind}-χορδο ${dec.first.name}`;
+      const tag2 = document.createElement('div'); tag2.className = 'unit-tag u' + dec.second.kind; tag2.textContent = `${dec.second.kind}-χορδο ${dec.second.name}`;
       sidebar.appendChild(tag1); sidebar.appendChild(tag2);
 
       const body = document.createElement('div');
@@ -282,13 +347,14 @@ function openFindModal() {
 }
 
 function findRoadMatches(selectedNotes) {
-  const set = new Set(selectedNotes);
+  // Compare by pitch class, not label spelling
+  const set = new Set(selectedNotes.map(n => nameToPc(n)));
   const out = [];
   for (const r of ROADS) {
     for (const tonic of NOTES) {
-      const seq = computeNotes(tonic, r.steps);
-      const unique = seq.slice(0, 7);
-      if (sameSet(set, unique)) out.push({ road: r, tonic, seq });
+      const sc = computeScale(tonic, r.steps);
+      const pcs = sc.pcs.slice(0, 7);
+      if (sameSet(set, pcs)) out.push({ road: r, tonic, seq: sc.names });
     }
   }
   return out;
@@ -355,8 +421,9 @@ function openFretboardModal() {
     grid.innerHTML = '';
     const road = ROADS[parseInt(roadSel.value || '0', 10)] || ROADS[0];
     const tonic = tonicSel.value || 'Mi';
-    const seq = computeNotes(tonic, road.steps);
-    const allowed = new Set(seq.slice(0,7));
+    const sc = computeScale(tonic, road.steps);
+    const allowedPcs = new Set(sc.pcs.slice(0,7));
+    const pcToName = sc.degreeMap; // Map pc -> spelled name
     // Tuning defined low→high. Display upside down (low string at bottom),
     // so render rows from high→low.
     const strings = tuningSel.value === 'EADGBE' ? ['Mi','La','Re','Sol','Si','Mi'] : ['Mi','La','Re','Sol','Si','Mi'];
@@ -373,16 +440,19 @@ function openFretboardModal() {
     grid.appendChild(header);
 
     function noteAt(open, fret) {
-      const idx = NOTES.findIndex(n => n.toLowerCase() === open.toLowerCase());
+      const idx = nameToPc(open);
       if (idx < 0) return '';
-      return NOTES[(idx + fret) % NOTES.length];
+      const pc = (idx + fret) % NOTES.length;
+      // Prefer spelled scale name if this pc is in the scale; else show sharp name
+      return pcToName.get(pc) || sharpNameForPc(pc);
     }
     for (const s of [...strings].reverse()) {
       const row = document.createElement('div'); row.style.display = 'contents';
       row.appendChild(cell(s, 'cell nut'));
       for (let f = 0; f <= frets; f++) {
         const n = noteAt(s, f);
-        const on = allowed.has(n);
+        const pc = nameToPc(n);
+        const on = allowedPcs.has(pc);
         const cls = 'cell fret ' + (on ? 'on' : 'off');
         row.appendChild(cell(n, cls));
       }
