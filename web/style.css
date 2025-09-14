@@ -43,6 +43,7 @@ select {
 .card h2 { font-size: 18px; margin: 0 0 8px; color: var(--primary); }
 .dist { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .notes { font-feature-settings: "tnum" 1; letter-spacing: 0.05px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; font-size: 14px; text-align: center; display: block; }
+.card .notes { text-align: left; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #20202a; border: 1px solid var(--border); color: var(--accent); font-size: 12px; margin-left: 6px; }
 
 /* Units (4-chord / 5-chord) */
