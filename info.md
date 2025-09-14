@@ -47,7 +47,6 @@ Road distances (ordered)
 - Φυσικό Μινόρε: `T-H-T-T-H-T-T`
 - Αρμονικό Μινόρε: `T-H-T-T-H-3H-H`
 - Νιαβέντ: `T-H-3H-H-H-3H-H`
-- Νικρίζ: `T-H-3H-H-T-T-H`
 - Νικρίζ: `T-H-3H-H-T-H-T`
 - Σαμπάχ: `T-H-H-3H-H-T-T`
 - Καρσιγάρ: `T-H-T-H-3H-H-T`
@@ -55,6 +54,7 @@ Road distances (ordered)
 - Χιτζασκιάρ: `H-3H-H-T-H-3H-H`
 - Πειραιώτικος: `H-3H-T-H-H-3H-H`
 - Ραστ: `T-T-H-T-T-T-H`
+- Σουζινάκ: `T-T-H-T-H-3H-H`
 - Χουζάμ: `3H-H-H-T-H-3H-H`
 - Σεγκιά: `3H-H-H-T-T-T-H`
 

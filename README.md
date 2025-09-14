@@ -14,12 +14,45 @@ A tiny Rust + static web project that displays Greek λαϊκοί δρόμοι (
 - Test: `cargo test`
 - Print all roads for a tonic (example Mi):
   - `cargo run --bin print_roads Mi`
-  - Output uses enharmonic spelling (one of each Do/Re/Mi/Fa/Sol/La/Si per octave). See example below.
+  - Output uses enharmonic spelling (one of each Do/Re/Mi/Fa/Sol/La/Si per octave). See details in CLI section.
 
 ## Project Structure
 - `web/` — static site: `index.html`, `style.css`, `app.js` (no backend required)
 - `src/lib.rs` — core logic: `NOTES`, `ROADS`, `notes_for()`, `spelled_notes_for()`
 - `src/bin/print_roads.rs` — CLI to preview notes per road
+
+## CLI
+- Usage: `cargo run --bin print_roads [TONIC]`
+- Default tonic: `Mi` (if TONIC is omitted)
+- Accepted tonic forms (case-insensitive):
+  - Base solfège names: `Do`, `Re`, `Mi`, `Fa`, `Sol`, `La`, `Si`
+  - With optional accidentals: `#` or `b` (e.g., `Do#`, `Reb`, `Solb`, `Lab`)
+- Behavior:
+  - Prints all roads with their distance string and the 8-note sequence for the chosen tonic.
+  - Notes are enharmonically spelled: exactly one of each Do/Re/Mi/Fa/Sol/La/Si per octave, with `#`/`b` as needed.
+  - On invalid tonic input, exits with status 1 and prints a helpful message with accepted forms and common names.
+
+### Examples
+```
+$ cargo run --bin print_roads Sol
+Ουσάκ (H-T-T-T-H-T-T)
+  Sol, Lab, Sib, Do, Re, Mib, Fa, Sol
+
+Νιαβέντ (T-H-3H-H-H-3H-H)
+  Sol, La, Sib, Do#, Re, Mib, Fa#, Sol
+```
+
+```
+$ cargo run --bin print_roads Lab
+Ουσάκ (H-T-T-T-H-T-T)
+  Lab, Sib, Do, Reb, Mib, Fab, Solb, Lab
+...
+```
+
+```
+$ cargo run --bin print_roads sol   # lowercase also accepted
+...
+```
 
 ## Features
 - Tonic selector renders all Roads with computed notes for the chosen tonic.
@@ -47,7 +80,6 @@ Road distances (ordered)
 - Φυσικό Μινόρε: `T-H-T-T-H-T-T`
 - Αρμονικό Μινόρε: `T-H-T-T-H-3H-H`
 - Νιαβέντ: `T-H-3H-H-H-3H-H`
-- Νικρίζ: `T-H-3H-H-T-T-H`
 - Νικρίζ: `T-H-3H-H-T-H-T`
 - Σαμπάχ: `T-H-H-3H-H-T-T`
 - Καρσιγάρ: `T-H-T-H-3H-H-T`
@@ -55,6 +87,7 @@ Road distances (ordered)
 - Χιτζασκιάρ: `H-3H-H-T-H-3H-H`
 - Πειραιώτικος: `H-3H-T-H-H-3H-H`
 - Ραστ: `T-T-H-T-T-T-H`
+- Σουζινάκ: `T-T-H-T-H-3H-H`
 - Χουζάμ: `3H-H-H-T-H-3H-H`
 - Σεγκιά: `3H-H-H-T-T-T-H`
 

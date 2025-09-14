@@ -12,6 +12,7 @@ const ROADS = [
   { name: "Χιτζασκιάρ", distances: "H-3H-H-T-H-3H-H", steps: [1,3,1,2,1,3,1] },
   { name: "Πειραιώτικος", distances: "H-3H-T-H-H-3H-H", steps: [1,3,2,1,1,3,1] },
   { name: "Ραστ", distances: "T-T-H-T-T-T-H", steps: [2,2,1,2,2,2,1] },
+  { name: "Σουζινάκ", distances: "T-T-H-T-H-3H-H", steps: [2,2,1,2,1,3,1] },
   { name: "Χουζάμ", distances: "3H-H-H-T-H-3H-H", steps: [3,1,1,2,1,3,1] },
   { name: "Σεγκιά", distances: "3H-H-H-T-T-T-H", steps: [3,1,1,2,2,2,1] },
 ];

@@ -10,25 +10,93 @@ pub struct Road {
 }
 
 pub const ROADS: &[Road] = &[
-    Road { name: "Ουσάκ", distances: "H-T-T-T-H-T-T", steps: &[1, 2, 2, 2, 1, 2, 2] },
-    Road { name: "Φυσικό Μινόρε", distances: "T-H-T-T-H-T-T", steps: &[2, 1, 2, 2, 1, 2, 2] },
-    Road { name: "Αρμονικό Μινόρε", distances: "T-H-T-T-H-3H-H", steps: &[2, 1, 2, 2, 1, 3, 1] },
-    Road { name: "Νιαβέντ", distances: "T-H-3H-H-H-3H-H", steps: &[2, 1, 3, 1, 1, 3, 1] },
-    Road { name: "Νικρίζ", distances: "T-H-3H-H-T-H-T", steps: &[2, 1, 3, 1, 2, 1, 2] },
-    Road { name: "Σαμπάχ", distances: "T-H-H-3H-H-T-T", steps: &[2, 1, 1, 3, 1, 2, 2] },
-    Road { name: "Καρσιγάρ", distances: "T-H-T-H-3H-H-T", steps: &[2, 1, 2, 1, 3, 1, 2] },
-    Road { name: "Χιτζάζ", distances: "H-3H-H-T-H-T-T", steps: &[1, 3, 1, 2, 1, 2, 2] },
-    Road { name: "Χιτζασκιάρ", distances: "H-3H-H-T-H-3H-H", steps: &[1, 3, 1, 2, 1, 3, 1] },
-    Road { name: "Πειραιώτικος", distances: "H-3H-T-H-H-3H-H", steps: &[1, 3, 2, 1, 1, 3, 1] },
-    Road { name: "Ραστ", distances: "T-T-H-T-T-T-H", steps: &[2, 2, 1, 2, 2, 2, 1] },
-    Road { name: "Χουζάμ", distances: "3H-H-H-T-H-3H-H", steps: &[3, 1, 1, 2, 1, 3, 1] },
-    Road { name: "Σεγκιά", distances: "3H-H-H-T-T-T-H", steps: &[3, 1, 1, 2, 2, 2, 1] },
+    Road {
+        name: "Ουσάκ",
+        distances: "H-T-T-T-H-T-T",
+        steps: &[1, 2, 2, 2, 1, 2, 2],
+    },
+    Road {
+        name: "Φυσικό Μινόρε",
+        distances: "T-H-T-T-H-T-T",
+        steps: &[2, 1, 2, 2, 1, 2, 2],
+    },
+    Road {
+        name: "Αρμονικό Μινόρε",
+        distances: "T-H-T-T-H-3H-H",
+        steps: &[2, 1, 2, 2, 1, 3, 1],
+    },
+    Road {
+        name: "Νιαβέντ",
+        distances: "T-H-3H-H-H-3H-H",
+        steps: &[2, 1, 3, 1, 1, 3, 1],
+    },
+    Road {
+        name: "Νικρίζ",
+        distances: "T-H-3H-H-T-H-T",
+        steps: &[2, 1, 3, 1, 2, 1, 2],
+    },
+    Road {
+        name: "Σαμπάχ",
+        distances: "T-H-H-3H-H-T-T",
+        steps: &[2, 1, 1, 3, 1, 2, 2],
+    },
+    Road {
+        name: "Καρσιγάρ",
+        distances: "T-H-T-H-3H-H-T",
+        steps: &[2, 1, 2, 1, 3, 1, 2],
+    },
+    Road {
+        name: "Χιτζάζ",
+        distances: "H-3H-H-T-H-T-T",
+        steps: &[1, 3, 1, 2, 1, 2, 2],
+    },
+    Road {
+        name: "Χιτζασκιάρ",
+        distances: "H-3H-H-T-H-3H-H",
+        steps: &[1, 3, 1, 2, 1, 3, 1],
+    },
+    Road {
+        name: "Πειραιώτικος",
+        distances: "H-3H-T-H-H-3H-H",
+        steps: &[1, 3, 2, 1, 1, 3, 1],
+    },
+    Road {
+        name: "Ραστ",
+        distances: "T-T-H-T-T-T-H",
+        steps: &[2, 2, 1, 2, 2, 2, 1],
+    },
+    Road {
+        name: "Σουζινάκ",
+        distances: "T-T-H-T-H-3H-H",
+        steps: &[2, 2, 1, 2, 1, 3, 1],
+    },
+    Road {
+        name: "Χουζάμ",
+        distances: "3H-H-H-T-H-3H-H",
+        steps: &[3, 1, 1, 2, 1, 3, 1],
+    },
+    Road {
+        name: "Σεγκιά",
+        distances: "3H-H-H-T-T-T-H",
+        steps: &[3, 1, 1, 2, 2, 2, 1],
+    },
 ];
 
 pub fn index_of_note(note: &str) -> Option<usize> {
     NOTES.iter().position(|&n| n.eq_ignore_ascii_case(note))
 }
 
+/// Compute a simple sharp-based note sequence for a road.
+///
+/// Returns `None` if the tonic cannot be parsed.
+///
+/// Example
+/// ```
+/// use echoes::{ROADS, notes_for};
+/// let road = ROADS.iter().find(|r| r.name == "Νιαβέντ").unwrap();
+/// let v = notes_for("Mi", road.steps).unwrap();
+/// assert_eq!(v, vec!["Mi","Fa#","Sol","La#","Si","Do","Re#","Mi"]);
+/// ```
 pub fn notes_for(tonic: &str, steps: &[u8]) -> Option<Vec<String>> {
     let start = index_of_note(tonic)?;
     let mut idx = start;
@@ -43,7 +111,15 @@ pub fn notes_for(tonic: &str, steps: &[u8]) -> Option<Vec<String>> {
 
 // --- Enharmonic spelling (solfege with #/b) ---
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-enum Letter { Do, Re, Mi, Fa, Sol, La, Si }
+enum Letter {
+    Do,
+    Re,
+    Mi,
+    Fa,
+    Sol,
+    La,
+    Si,
+}
 
 fn base_pc(letter: Letter) -> usize {
     match letter {
@@ -70,14 +146,30 @@ fn letter_name(letter: Letter) -> &'static str {
 }
 
 fn parse_base_letter(name: &str) -> Option<Letter> {
-    // Order matters: "Sol" vs "Si"
-    if name.starts_with("Sol") { return Some(Letter::Sol); }
-    if name.starts_with("Si") { return Some(Letter::Si); }
-    if name.starts_with("Do") { return Some(Letter::Do); }
-    if name.starts_with("Re") { return Some(Letter::Re); }
-    if name.starts_with("Mi") { return Some(Letter::Mi); }
-    if name.starts_with("Fa") { return Some(Letter::Fa); }
-    if name.starts_with("La") { return Some(Letter::La); }
+    // Case-insensitive match. Order matters: "Sol" vs "Si".
+    let s = name;
+    let lc = s.to_ascii_lowercase();
+    if lc.starts_with("sol") {
+        return Some(Letter::Sol);
+    }
+    if lc.starts_with("si") {
+        return Some(Letter::Si);
+    }
+    if lc.starts_with("do") {
+        return Some(Letter::Do);
+    }
+    if lc.starts_with("re") {
+        return Some(Letter::Re);
+    }
+    if lc.starts_with("mi") {
+        return Some(Letter::Mi);
+    }
+    if lc.starts_with("fa") {
+        return Some(Letter::Fa);
+    }
+    if lc.starts_with("la") {
+        return Some(Letter::La);
+    }
     None
 }
 
@@ -98,10 +190,20 @@ fn name_to_pc(name: &str) -> Option<usize> {
 fn letter_cycle_from(tonic: &str) -> [Letter; 7] {
     // Rotate the base letters to start from the tonic's base letter
     let base = parse_base_letter(tonic).unwrap_or(Letter::Mi); // default shouldn't happen with our inputs
-    let all = [Letter::Do, Letter::Re, Letter::Mi, Letter::Fa, Letter::Sol, Letter::La, Letter::Si];
+    let all = [
+        Letter::Do,
+        Letter::Re,
+        Letter::Mi,
+        Letter::Fa,
+        Letter::Sol,
+        Letter::La,
+        Letter::Si,
+    ];
     let start_idx = all.iter().position(|&l| l == base).unwrap_or(0);
     let mut out = [Letter::Do; 7];
-    for i in 0..7 { out[i] = all[(start_idx + i) % 7]; }
+    for i in 0..7 {
+        out[i] = all[(start_idx + i) % 7];
+    }
     out
 }
 
@@ -109,8 +211,21 @@ fn sharp_name_for_pc(pc: usize) -> &'static str {
     NOTES[pc % 12]
 }
 
-/// Compute spelled notes for a road starting from tonic, ensuring one of each letter
-/// per octave, using # or b where necessary.
+/// Compute spelled notes for a road starting from `tonic`, ensuring one of each
+/// letter per octave (Do, Re, Mi, Fa, Sol, La, Si), using `#` or `b` where necessary.
+///
+/// Accepts base names with optional sharps/flats (e.g., `Sol`, `Sol#`, `Solb`), case-insensitively.
+///
+/// Example
+/// ```
+/// use echoes::{ROADS, spelled_notes_for};
+/// let road = ROADS.iter().find(|r| r.name == "Νιαβέντ").unwrap();
+/// let v = spelled_notes_for("Sol", road.steps).unwrap();
+/// assert_eq!(v, vec!["Sol","La","Sib","Do#","Re","Mib","Fa#","Sol"]);
+/// // Lowercase tonic also works
+/// let v2 = spelled_notes_for("sol", road.steps).unwrap();
+/// assert_eq!(v2, v);
+/// ```
 pub fn spelled_notes_for(tonic: &str, steps: &[u8]) -> Option<Vec<String>> {
     // Determine starting pitch class from tonic (accepts Do/Do#/Dob style)
     let start_pc = name_to_pc(tonic).or_else(|| index_of_note(tonic))?;
@@ -145,17 +260,19 @@ mod tests {
     fn niavend_from_mi_matches_example() {
         let road = ROADS.iter().find(|r| r.name == "Νιαβέντ").unwrap();
         let notes = notes_for("Mi", road.steps).unwrap();
-        assert_eq!(notes, vec![
-            "Mi", "Fa#", "Sol", "La#", "Si", "Do", "Re#", "Mi"
-        ]);
+        assert_eq!(
+            notes,
+            vec!["Mi", "Fa#", "Sol", "La#", "Si", "Do", "Re#", "Mi"]
+        );
     }
 
     #[test]
     fn niavend_from_sol_spelling_uses_flats() {
         let road = ROADS.iter().find(|r| r.name == "Νιαβέντ").unwrap();
         let notes = spelled_notes_for("Sol", road.steps).unwrap();
-        assert_eq!(notes, vec![
-            "Sol", "La", "Sib", "Do#", "Re", "Mib", "Fa#", "Sol"
-        ]);
+        assert_eq!(
+            notes,
+            vec!["Sol", "La", "Sib", "Do#", "Re", "Mib", "Fa#", "Sol"]
+        );
     }
 }
