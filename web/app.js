@@ -37,6 +37,22 @@ const PENTAS = [
   { kind: '5', name: 'Χουζάμ', steps: [3,1,1,2], distances: '3H-H-H-T' },
 ];
 
+// Standard tuning reference: lowest string first with MIDI numbers (C=Do=0).
+const STANDARD_TUNING = [
+  { name: 'Mi', midi: 40 }, // E2
+  { name: 'La', midi: 45 }, // A2
+  { name: 'Re', midi: 50 }, // D3
+  { name: 'Sol', midi: 55 }, // G3
+  { name: 'Si', midi: 59 }, // B3
+  { name: 'Mi', midi: 64 }, // E4
+];
+
+const TUNINGS = {
+  EADGBE: STANDARD_TUNING,
+};
+
+const OCTAVE_CLASSES = ['oct-0', 'oct-1', 'oct-2', 'oct-3', 'oct-4', 'oct-5'];
+
 function arraysEqual(a, b) {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
@@ -470,16 +486,28 @@ function openFretboardModal() {
     grid.innerHTML = '';
     const road = ROADS[parseInt(roadSel.value || '0', 10)] || ROADS[0];
     const tonic = tonicSel.value || 'Mi';
+    const tonicPc = pcFromTonic(tonic);
+    if (tonicPc < 0) return;
     const sc = computeScale(tonic, road.steps);
-    const allowedPcs = new Set(sc.pcs.slice(0,7));
     const pcToName = sc.degreeMap; // Map pc -> spelled name
-    // Tuning defined low→high. Display upside down (low string at bottom),
-    // so render rows from high→low.
-    const strings = tuningSel.value === 'EADGBE' ? ['Mi','La','Re','Sol','Si','Mi'] : ['Mi','La','Re','Sol','Si','Mi'];
+
+    const allowedOffsets = new Set([0]);
+    let acc = 0;
+    for (let i = 0; i < road.steps.length - 1; i++) {
+      acc = (acc + road.steps[i]) % NOTES.length;
+      allowedOffsets.add(acc);
+    }
+
+    const allowedPcs = new Set();
+    allowedOffsets.forEach(offset => {
+      const pc = (tonicPc + offset + NOTES.length) % NOTES.length;
+      allowedPcs.add(pc);
+    });
+
+    const tuningKey = tuningSel.value || 'EADGBE';
+    const strings = (TUNINGS[tuningKey] || STANDARD_TUNING);
     const frets = 12;
-    // columns = 1 nut + (frets+1)
-    const cols = 1 + (frets + 1);
-    grid.style.gridTemplateColumns = `60px repeat(${frets+1}, 44px)`;
+    grid.style.gridTemplateColumns = `66px repeat(${frets+1}, 48px)`;
     // Header row: nut label + fret numbers 0..12
     const header = document.createElement('div'); header.className = 'fb-header'; header.style.display = 'contents';
     const nutHead = cell(' ', 'cell nut'); header.appendChild(nutHead);
@@ -488,22 +516,55 @@ function openFretboardModal() {
     }
     grid.appendChild(header);
 
-    function noteAt(open, fret) {
-      const idx = nameToPc(open);
-      if (idx < 0) return '';
-      const pc = (idx + fret) % NOTES.length;
-      // Prefer spelled scale name if this pc is in the scale; else show sharp name
-      return pcToName.get(pc) || sharpNameForPc(pc);
+    const lowestTonicMidi = findLowestTonic(strings, frets, tonicPc);
+
+    function findLowestTonic(strs, maxFret, targetPc) {
+      if (targetPc < 0) return null;
+      let min = Number.POSITIVE_INFINITY;
+      for (const str of strs) {
+        for (let f = 0; f <= maxFret; f++) {
+          const midi = str.midi + f;
+          if ((midi % NOTES.length) === targetPc) {
+            if (midi < min) min = midi;
+            break; // lowest on this string found
+          }
+        }
+      }
+      return Number.isFinite(min) ? min : null;
     }
-    for (const s of [...strings].reverse()) {
+
+    function octaveClassFor(midi) {
+      if (lowestTonicMidi == null || OCTAVE_CLASSES.length === 0) return '';
+      const raw = Math.floor((midi - lowestTonicMidi) / 12);
+      const idx = ((raw % OCTAVE_CLASSES.length) + OCTAVE_CLASSES.length) % OCTAVE_CLASSES.length;
+      return OCTAVE_CLASSES[idx];
+    }
+
+    function noteInfo(str, fret) {
+      const midi = str.midi + fret;
+      const pc = ((midi % NOTES.length) + NOTES.length) % NOTES.length;
+      const rel = (pc - tonicPc + NOTES.length) % NOTES.length;
+      const on = allowedPcs.has(pc) && allowedOffsets.has(rel);
+      const label = on ? (pcToName.get(pc) || sharpNameForPc(pc)) : sharpNameForPc(pc);
+      let className = 'cell fret ' + (on ? 'on' : 'off');
+      let octave = null;
+      if (on) {
+        const octClass = octaveClassFor(midi);
+        if (octClass) className += ' ' + octClass;
+        if (lowestTonicMidi != null) {
+          octave = Math.floor((midi - lowestTonicMidi) / 12);
+        }
+      }
+      return { label, className, octave };
+    }
+    for (const str of [...strings].reverse()) {
       const row = document.createElement('div'); row.style.display = 'contents';
-      row.appendChild(cell(s, 'cell nut'));
+      row.appendChild(cell(str.name, 'cell nut'));
       for (let f = 0; f <= frets; f++) {
-        const n = noteAt(s, f);
-        const pc = nameToPc(n);
-        const on = allowedPcs.has(pc);
-        const cls = 'cell fret ' + (on ? 'on' : 'off');
-        row.appendChild(cell(n, cls));
+        const info = noteInfo(str, f);
+        const cellEl = cell(info.label, info.className);
+        if (info.octave !== null) cellEl.dataset.octave = String(info.octave);
+        row.appendChild(cellEl);
       }
       grid.appendChild(row);
     }
